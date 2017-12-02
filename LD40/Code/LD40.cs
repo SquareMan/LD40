@@ -1,6 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.Graphics;
+using MonoGame.Extended.Sprites;
+using MonoGame.Extended.TextureAtlases;
 
 namespace LD40
 {
@@ -9,9 +12,11 @@ namespace LD40
     /// </summary>
     public class LD40 : Game
     {
+        private GameManager gm;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        
+
         public LD40()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -26,7 +31,10 @@ namespace LD40
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            StateManager.CurrentState = StateManager.State.Initialization;
+            InputHelper.Initialize();
+            TextureHelper.LoadTextures(Content);
+            gm = new GameManager();
 
             base.Initialize();
         }
@@ -40,7 +48,6 @@ namespace LD40
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -62,7 +69,8 @@ namespace LD40
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            InputHelper.Update(gameTime);
+            gm.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -75,7 +83,9 @@ namespace LD40
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            gm.Draw(gameTime, spriteBatch);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
